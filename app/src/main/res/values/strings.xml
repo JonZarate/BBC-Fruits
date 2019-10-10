@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">BBC-Fruits</string>
+
+    <string name="title_list">Fruits</string>
+    <string name="title_detail">Fruit</string>
+
+    <string name="pounds">£%1$.2f</string>
+    <string name="kg">%1$.2fkg</string>
+
+</resources>
