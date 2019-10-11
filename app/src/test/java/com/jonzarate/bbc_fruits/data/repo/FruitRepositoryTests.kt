@@ -7,6 +7,7 @@ import io.mockk.coVerifyAll
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
@@ -16,8 +17,10 @@ class FruitRepositoryTests {
     private val app = mockk<AppRepository>(relaxed = true)
     private val repo = FruitRepository(api, app)
 
-    @Before
-    fun setup() {
+
+    @After
+    fun clean() {
+        confirmVerified(api, app)
         clearMocks(api, app)
     }
 
@@ -26,7 +29,5 @@ class FruitRepositoryTests {
         runBlocking { repo.getFruits() }
 
         coVerifyAll { api.getFruits(); app.executeCall<FruitResponse>(any()) }
-
-        confirmVerified(api, app)
     }
 }

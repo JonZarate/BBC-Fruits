@@ -8,6 +8,7 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -21,8 +22,10 @@ class DetailViewModelTests {
     private val app = mockk<AppRepository>(relaxed = true)
     private val viewmodel = DetailViewModel(app)
 
-    @Before
-    fun setup () {
+
+    @After
+    fun clean () {
+        confirmVerified(app)
         clearMocks(app)
     }
 
@@ -31,7 +34,5 @@ class DetailViewModelTests {
         viewmodel.onPageLoaded()
 
         coVerify { app.pageLoaded(DetailFragment::class.toString()) }
-
-        confirmVerified(app)
     }
 }

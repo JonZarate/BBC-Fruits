@@ -11,7 +11,7 @@ import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.Before
+import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,15 +21,11 @@ import org.robolectric.RobolectricTestRunner
 class ListViewModelTests {
 
     @get:Rule
-    val rule = InstantTaskExecutorRule()
-
-    @get:Rule
     @ExperimentalCoroutinesApi
     val dispatcher = CoroutinesTestRule()
 
-    private val repo = mockk<FruitRepository>(relaxed = true)
-    private val app = mockk<AppRepository>(relaxed = true)
-    private val viewmodel = ListViewModel(repo, app)
+    @get:Rule
+    val executor = InstantTaskExecutorRule()
 
     private val TYPE = "orange"
     private val PRICE = 119
@@ -37,10 +33,18 @@ class ListViewModelTests {
     private val fruit = Fruit(TYPE, PRICE, WEIGHT)
     private val response = FruitResponse(ArrayList<Fruit>().apply { add(fruit) })
 
-    @Before
-    fun setup () {
+    private val app = mockk<AppRepository>(relaxed = true)
+    private val repo = mockk<FruitRepository> (relaxed = true) {
+        coEvery { getFruits() } returns response
+    }
+
+    private val viewmodel = ListViewModel(repo, app)
+
+
+    @After
+    fun clear () {
+        confirmVerified(repo, app)
         clearMocks(repo, app)
-        coEvery { repo.getFruits() } coAnswers { response }
     }
 
     @Test
@@ -55,6 +59,7 @@ class ListViewModelTests {
         viewmodel.onFruitSelected(fruit)
 
         assertEquals(fruit, viewmodel.launchDetailView.value)
+        coVerify { repo.getFruits() }
         verify { app.pageRequested(DetailFragment::class.toString()) }
     }
 }

@@ -3,6 +3,7 @@ package com.jonzarate.bbc_fruits.data.repo
 import com.jonzarate.bbc_fruits.data.net.AnalyticsApi
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
@@ -11,8 +12,10 @@ class AppRepositoryTests {
     private val api = mockk<AnalyticsApi>(relaxed = true)
     private val repo = AppRepository(api)
 
-    @Before
-    fun setup () {
+
+    @After
+    fun clean () {
+        confirmVerified(api)
         clearMocks(api)
     }
 
@@ -26,8 +29,6 @@ class AppRepositoryTests {
         }
 
         coVerify { api.sendEventLoad(END) }
-
-        confirmVerified(api)
     }
 
     @Test
@@ -40,8 +41,6 @@ class AppRepositoryTests {
         }
 
         coVerify { api.sendEventError(any()) }
-
-        confirmVerified(api)
     }
 
     @Test
@@ -53,8 +52,6 @@ class AppRepositoryTests {
         }
 
         coVerify { api.sendEventDisplay(any()) }
-
-        confirmVerified(api)
     }
 
     @Test
@@ -66,7 +63,5 @@ class AppRepositoryTests {
         }
 
         coVerify { api.sendEventError(ERROR) }
-
-        confirmVerified(api)
     }
 }
